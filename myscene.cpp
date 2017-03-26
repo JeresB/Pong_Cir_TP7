@@ -18,6 +18,9 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   scoreJ1 = 0;
   scoreJ2 = 0;
 
+  hauteurG = 50;
+  hauteurD = 50;
+
   //On gere le rectangle d'espace de jeu
   this->setSceneRect(0, 0, tailleX, tailleY);
 
@@ -42,6 +45,13 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   texte->setPos(w/4 - 17, 2);
   texte->setScale(1);
   this->addItem(texte);
+
+  // On gère l'affichage du text de pause
+  pause  = new QGraphicsTextItem( "PAUSE - Espace pour continuer !");
+  pause->setPos(tailleX/5, tailleY/3);
+  pause->setScale(2);
+  this->addItem(this->pause);
+  pause->setVisible(false);
 
   //On affiche notre balle
   ball = new QGraphicsPixmapItem(QPixmap("ballon-icone-6652-16.png"));
@@ -74,18 +84,15 @@ void MyScene::CheckBord() {
   if(ball->y()+sensY < 0) {
     sensY = VITESSEY;
   }
-  // if(ball->x() == barre_gauche->x()+170) {
-  //   for(int i = barre_gauche->y(); i < barre_gauche->y()+bgy; i++) {
-  //     if(i == pic->y()) sensX = VITESSEX;
-  //   }
-  // }
-  //
-  // if(barre_gauche->collidesWithItem(pic) && sensX<0) {
-  //   sensX = VITESSEX;
-  // }
-  // if(barre_droite->collidesWithItem(pic) && sensX<1604) {
-  //   sensX = -VITESSEX;
-  // }
+
+  // Collision avec la barre de gauche
+  if(barre_gauche_item->collidesWithItem(ball) && sensX<0) {
+    sensX = VITESSEX;
+  }
+  // Collision avec la barre de droite
+  if(barre_droite_item->collidesWithItem(ball) && sensX<tailleX) {
+    sensX = -VITESSEX;
+  }
 }
 
 void MyScene::update() {
@@ -98,47 +105,45 @@ void MyScene::update() {
   this->addItem(this->texte);
 }
 
-// void MyScene::keyPressEvent(QKeyEvent *event) {
-//   if(event->key() == Qt::Key_A) {
-//     if(bgy == -490) return;
-//     else {
-//       bgy = bgy -20;
-//       barre_gauche->setPos(0,bgy);
-//     }
-//   }
-//
-//   if(event->key() == Qt::Key_Q) {
-//     if(bgy == 380) return;
-//     else {
-//       bgy = bgy +20;
-//       barre_gauche->setPos(0,bgy);
-//     }
-//   }
-//
-//   if(event->key() == Qt::Key_P) {
-//     if(bdy == -490) return;
-//     else {
-//       bdy = bdy -20;
-//       barre_droite->setPos(0,bdy);
-//     }
-//   }
-//
-//   if(event->key() == Qt::Key_M) {
-//     if(bdy == 380) return;
-//     else {
-//       bdy = bdy +20;
-//       barre_droite->setPos(0,bdy);
-//     }
-//   }
-//
-//   if(event->key() == Qt::Key_Space) {
-//     if(timer->isActive()) {
-//       timer->stop();
-//       text_pause->setVisible(true);
-//     } else {
-//         timer->start(10);
-//         text_pause->setVisible(false);
-//     }
-//
-//   }
-// }
+void MyScene::keyPressEvent(QKeyEvent *event) {
+  if(event->key() == Qt::Key_A) {
+    if(hauteurG <= -50) return;
+    else {
+      hauteurG = hauteurG -20;
+      barre_gauche_item->setPos(0,hauteurG);
+    }
+  }
+  if(event->key() == Qt::Key_Q) {
+    if(hauteurG >= tailleY - 100) return;
+    else {
+      hauteurG = hauteurG +20;
+      barre_gauche_item->setPos(0,hauteurG);
+    }
+  }
+
+  if(event->key() == Qt::Key_P) {
+    if(hauteurD <= -50) return;
+    else {
+      hauteurD = hauteurD -20;
+      barre_droite_item->setPos(0,hauteurD);
+    }
+  }
+
+  if(event->key() == Qt::Key_M) {
+    if(hauteurD >= tailleY - 100) return;
+    else {
+      hauteurD = hauteurD +20;
+      barre_droite_item->setPos(0,hauteurD);
+    }
+  }
+
+  if(event->key() == Qt::Key_Space) {
+    if(timer->isActive()) {
+      timer->stop();
+      pause->setVisible(true);
+    } else {
+        timer->start(30);
+        pause->setVisible(false);
+    }
+  }
+}

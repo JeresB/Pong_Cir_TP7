@@ -25,7 +25,7 @@ class MyScene : public QGraphicsScene {
 
   public:
     MyScene (QObject *parent = 0);
-    // void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event);
     void CheckBord();
 
   public slots:
@@ -35,7 +35,7 @@ class MyScene : public QGraphicsScene {
     QBrush brush;
     QColor couleur;
 
-    QGraphicsTextItem * text_pause;
+    QGraphicsTextItem * pause;
     QGraphicsLineItem * ligneMid;
     QGraphicsPixmapItem * ball;
     QGraphicsRectItem *barre_gauche_item;
@@ -54,6 +54,9 @@ class MyScene : public QGraphicsScene {
 
     int scoreJ1;
     int scoreJ2;
+
+    int hauteurD;
+    int hauteurG;
 
 };
 
