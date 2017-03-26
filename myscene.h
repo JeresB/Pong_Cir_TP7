@@ -17,12 +17,16 @@
 #include <QRect>
 #include <QPen>
 
+#define VITESSEX 2;
+#define VITESSEY 1;
+
 class MyScene : public QGraphicsScene {
   Q_OBJECT
 
   public:
     MyScene (QObject *parent = 0);
-    void mouvement();
+    // void keyPressEvent(QKeyEvent *event);
+    void CheckBord();
 
   public slots:
     void update();
@@ -38,6 +42,18 @@ class MyScene : public QGraphicsScene {
     QGraphicsRectItem *barre_droite_item;
     QGraphicsTextItem *texte;
     QTimer *timer;
+
+    int posBallX;
+    int posBallY;
+
+    int tailleX;
+    int tailleY;
+
+    int sensX;
+    int sensY;
+
+    int scoreJ1;
+    int scoreJ2;
 
 };
 
