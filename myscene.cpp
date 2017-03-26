@@ -21,6 +21,9 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   hauteurG = 50;
   hauteurD = 50;
 
+  vitesseX = 2;
+  vitesseY = 1;
+
   //On gere le rectangle d'espace de jeu
   this->setSceneRect(0, 0, tailleX, tailleY);
 
@@ -69,29 +72,36 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
 void MyScene::CheckBord() {
   //Gère la largeur pour les rebonds
   if(ball->x()+sensX > tailleX) {
-    sensX = -VITESSEX;
+    vitesseX = 2;
+    vitesseY = 1;
+    sensX = -vitesseX;
     scoreJ1++;
   }
   if(ball->x()+sensX < 0) {
-    sensX = VITESSEX;
+    vitesseX = 2;
+    vitesseY = 1;
+    sensX = vitesseX;
     scoreJ2++;
   }
 
   //Gère la hauteur pour les rebonds
   if(ball->y()+sensY > tailleY) {
-    sensY = -VITESSEY;
+    sensY = -vitesseY;
   }
   if(ball->y()+sensY < 0) {
-    sensY = VITESSEY;
+    sensY = vitesseY;
   }
 
   // Collision avec la barre de gauche
   if(barre_gauche_item->collidesWithItem(ball) && sensX<0) {
-    sensX = VITESSEX;
+    sensX = vitesseX;
+    vitesseX++;
   }
   // Collision avec la barre de droite
   if(barre_droite_item->collidesWithItem(ball) && sensX<tailleX) {
-    sensX = -VITESSEX;
+    sensX = -vitesseX;
+    vitesseX++;
+    vitesseY++;
   }
 }
 

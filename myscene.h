@@ -17,9 +17,6 @@
 #include <QRect>
 #include <QPen>
 
-#define VITESSEX 2;
-#define VITESSEY 1;
-
 class MyScene : public QGraphicsScene {
   Q_OBJECT
 
@@ -57,6 +54,10 @@ class MyScene : public QGraphicsScene {
 
     int hauteurD;
     int hauteurG;
+
+    int vitesseX;
+    int vitesseY;
+
 
 };
 
