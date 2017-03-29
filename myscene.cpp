@@ -6,8 +6,13 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   int h = ecran.height();
   int w = ecran.width();
 
-  tailleX = w/2;
-  tailleY = h/2;
+  if (plein_ecran == 1) {
+    tailleX = w;
+    tailleY = h;
+  } else {
+    tailleX = w/2;
+    tailleY = h/2;
+  }
 
   posBallX = w/4;
   posBallY = h/4;
@@ -26,6 +31,7 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
 
   //On gere le rectangle d'espace de jeu
   this->setSceneRect(0, 0, tailleX, tailleY);
+  this->setBackgroundBrush(Qt::blue);
 
   //On gère la barre qui bouge de gauche
   barre_gauche_item = new QGraphicsRectItem(50, 50, 10, 40);
@@ -66,7 +72,6 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
   timer->start(30);
-
 }
 
 void MyScene::CheckBord() {
@@ -112,7 +117,7 @@ void MyScene::update() {
   ball->setY(ball->y()+sensY);
 
   texte->setPlainText(QString::number(scoreJ1)+"   "+QString::number(scoreJ2));
-  this->addItem(this->texte);
+  //this->addItem(this->texte);
 }
 
 void MyScene::keyPressEvent(QKeyEvent *event) {
@@ -156,4 +161,21 @@ void MyScene::keyPressEvent(QKeyEvent *event) {
         pause->setVisible(false);
     }
   }
+}
+
+void MyScene::slot_pleinecran() {
+  if (plein_ecran == 0) {
+    plein_ecran = 1;
+    this->setSceneRect(0, 0, 1300, 700);
+
+
+  } else {
+    plein_ecran = 0;
+    this->setSceneRect(0, 0, tailleX, tailleY);
+  }
+
+}
+
+int MyScene::getPleinEcran() {
+  return plein_ecran;
 }

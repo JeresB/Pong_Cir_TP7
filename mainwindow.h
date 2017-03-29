@@ -7,6 +7,8 @@
 #include <QHBoxLayout>
 #include <QMenu>
 #include <QGroupBox>
+#include <QAction>
+#include <QPushButton>
 #include "myscene.h"
 
 class MainWindow : public QMainWindow {
@@ -15,6 +17,7 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QGroupBox *BuildGroupBoxControle();
+    int getPleinEcran();
 
   public slots:
 
@@ -23,6 +26,7 @@ class MainWindow : public QMainWindow {
     QMenu *menuFichier;
     QGraphicsView *myview;
     MyScene *myscene;
+    QAction *action_couleur;
 };
 
 #endif

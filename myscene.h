@@ -16,6 +16,10 @@
 #include <QObject>
 #include <QRect>
 #include <QPen>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
 
 class MyScene : public QGraphicsScene {
   Q_OBJECT
@@ -24,9 +28,11 @@ class MyScene : public QGraphicsScene {
     MyScene (QObject *parent = 0);
     void keyPressEvent(QKeyEvent *event);
     void CheckBord();
+    int getPleinEcran();
 
   public slots:
     void update();
+    void slot_pleinecran();
 
   private:
     QBrush brush;
@@ -58,7 +64,7 @@ class MyScene : public QGraphicsScene {
     int vitesseX;
     int vitesseY;
 
-
+    int plein_ecran = 0;
 };
 
 #endif
