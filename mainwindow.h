@@ -9,6 +9,9 @@
 #include <QGroupBox>
 #include <QAction>
 #include <QPushButton>
+#include <QScrollBar>
+#include <QSlider>
+#include <QMenuBar>
 #include "myscene.h"
 
 class MainWindow : public QMainWindow {
@@ -20,12 +23,14 @@ class MainWindow : public QMainWindow {
     int getPleinEcran();
 
   public slots:
+    void slot_pleinecran();
 
   private:
     QWidget *widget_general;
     QMenu *menuFichier;
     QGraphicsView *myview;
     MyScene *myscene;
+    QAction *action_reset;
     QAction *action_couleur;
 };
 

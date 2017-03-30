@@ -20,6 +20,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QColor>
 
 class MyScene : public QGraphicsScene {
   Q_OBJECT
@@ -32,7 +33,10 @@ class MyScene : public QGraphicsScene {
 
   public slots:
     void update();
-    void slot_pleinecran();
+    //void slot_pleinecran();
+    void slot_setVitesse(int);
+    void slot_reset();
+    void slot_couleur();
 
   private:
     QBrush brush;

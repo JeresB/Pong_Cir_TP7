@@ -163,17 +163,37 @@ void MyScene::keyPressEvent(QKeyEvent *event) {
   }
 }
 
-void MyScene::slot_pleinecran() {
-  if (plein_ecran == 0) {
-    plein_ecran = 1;
-    this->setSceneRect(0, 0, 1300, 700);
+// void MyScene::slot_pleinecran() {
+//   if (plein_ecran == 0) {
+//     plein_ecran = 1;
+//     this->setSceneRect(0, 0, tailleX*2 - 100, tailleY*2);
+//     ligneMid->setPos(tailleX -100, 2);
+//
+//   } else {
+//     plein_ecran = 0;
+//     this->setSceneRect(0, 0, tailleX, tailleY);
+//     ligneMid->setPos(tailleX/2, 2);
+//   }
+//
+// }
 
+void MyScene::slot_setVitesse(int nouveau) {
+  sensX *= nouveau;
+  sensY *= nouveau/2;
+}
 
-  } else {
-    plein_ecran = 0;
-    this->setSceneRect(0, 0, tailleX, tailleY);
-  }
+void MyScene::slot_reset() {
+  scoreJ1 = 0;
+  scoreJ2 = 0;
+  texte->setPlainText(QString::number(scoreJ1)+"   "+QString::number(scoreJ2));
+}
 
+void MyScene::slot_couleur() {
+  int R = rand()%255;
+  int G = rand()%255;
+  int B = rand()%255;
+
+  this->setBackgroundBrush(QColor(R, G, B));
 }
 
 int MyScene::getPleinEcran() {
