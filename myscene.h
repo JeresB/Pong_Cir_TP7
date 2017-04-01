@@ -22,6 +22,9 @@
 #include <QMessageBox>
 #include <QColor>
 
+#define LARGEUR_RAQUETTE 1
+#define LONGEUR_RAQUETTE 4
+
 class MyScene : public QGraphicsScene {
   Q_OBJECT
 
@@ -29,11 +32,11 @@ class MyScene : public QGraphicsScene {
     MyScene (QObject *parent = 0);
     void keyPressEvent(QKeyEvent *event);
     void CheckBord();
-    int getPleinEcran();
+    void pleinecran_myscene();
 
   public slots:
     void update();
-    //void slot_pleinecran();
+
     void slot_setVitesse(int);
     void slot_reset();
     void slot_couleur();
@@ -42,6 +45,8 @@ class MyScene : public QGraphicsScene {
     QBrush brush;
     QColor couleur;
 
+    QGraphicsRectItem *terrain;
+
     QGraphicsTextItem * pause;
     QGraphicsLineItem * ligneMid;
     QGraphicsPixmapItem * ball;
@@ -49,6 +54,9 @@ class MyScene : public QGraphicsScene {
     QGraphicsRectItem *barre_droite_item;
     QGraphicsTextItem *texte;
     QTimer *timer;
+
+    int hauteur;
+    int largeur;
 
     int posBallX;
     int posBallY;
@@ -68,7 +76,7 @@ class MyScene : public QGraphicsScene {
     int vitesseX;
     int vitesseY;
 
-    int plein_ecran = 0;
+    bool plein_ecran = false;
 };
 
 #endif

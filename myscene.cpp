@@ -3,19 +3,14 @@
 MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
 
   QRect ecran = QApplication::desktop()->availableGeometry();
-  int h = ecran.height();
-  int w = ecran.width();
+  hauteur = ecran.height();
+  largeur = ecran.width();
 
-  if (plein_ecran == 1) {
-    tailleX = w;
-    tailleY = h;
-  } else {
-    tailleX = w/2;
-    tailleY = h/2;
-  }
+  tailleX = largeur * 0.5;
+  tailleY = hauteur * 0.5;
 
-  posBallX = w/4;
-  posBallY = h/4;
+  posBallX = largeur * 0.25;
+  posBallY = hauteur * 0.25;
 
   sensX = 1;
   sensY = 1;
@@ -30,28 +25,32 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   vitesseY = 1;
 
   //On gere le rectangle d'espace de jeu
-  this->setSceneRect(0, 0, tailleX, tailleY);
-  this->setBackgroundBrush(Qt::blue);
+  terrain = new QGraphicsRectItem(0, 0, tailleX, tailleY);
+  terrain->setBrush(Qt::blue);
+  this->addItem(terrain);
 
   //On gère la barre qui bouge de gauche
-  barre_gauche_item = new QGraphicsRectItem(50, 50, 10, 40);
+  barre_gauche_item = new QGraphicsRectItem(tailleX * 0.1, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
   barre_gauche_item->setBrush(QColor(0,0,0));
   this->addItem(barre_gauche_item) ;
 
   //On gère la barre qui bouge de droite
-  barre_droite_item = new QGraphicsRectItem(w/2 -50, 50, 10, 40);
+  barre_droite_item = new QGraphicsRectItem(tailleX * 0.9, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
   barre_droite_item->setBrush(QColor(0,0,0));
   this->addItem(barre_droite_item) ;
 
   //ligne mediane
-  ligneMid = new QGraphicsLineItem(0, 0, 0, h/2);
-  ligneMid->setPos(w/4, 2);
-  ligneMid->setPen(QPen(Qt::red));
+  QPen pen = QPen(Qt::red);
+  pen.setWidth(3);
+  pen.setStyle(Qt::DashLine);
+  ligneMid = new QGraphicsLineItem(0, 0, 0, hauteur/2);
+  ligneMid->setPos(largeur/4, 2);
+  ligneMid->setPen(pen);
   this->addItem(ligneMid) ;
 
   //On gere l'affichage du score
   texte  = new QGraphicsTextItem("");
-  texte->setPos(w/4 - 17, 2);
+  texte->setPos(tailleX * 0.45, 2);
   texte->setScale(1);
   this->addItem(texte);
 
@@ -116,7 +115,7 @@ void MyScene::update() {
   ball->setX(ball->x()+sensX);
   ball->setY(ball->y()+sensY);
 
-  texte->setPlainText(QString::number(scoreJ1)+"   "+QString::number(scoreJ2));
+  texte->setPlainText(QString::number(scoreJ1)+"          "+QString::number(scoreJ2));
   //this->addItem(this->texte);
 }
 
@@ -163,19 +162,35 @@ void MyScene::keyPressEvent(QKeyEvent *event) {
   }
 }
 
-// void MyScene::slot_pleinecran() {
-//   if (plein_ecran == 0) {
-//     plein_ecran = 1;
-//     this->setSceneRect(0, 0, tailleX*2 - 100, tailleY*2);
-//     ligneMid->setPos(tailleX -100, 2);
-//
-//   } else {
-//     plein_ecran = 0;
-//     this->setSceneRect(0, 0, tailleX, tailleY);
-//     ligneMid->setPos(tailleX/2, 2);
-//   }
-//
-// }
+void MyScene::pleinecran_myscene() {
+  qDebug() << "plein ecran myscene";
+  if (plein_ecran == false) {
+    plein_ecran = true;
+
+    tailleX = largeur * 0.9;
+    tailleY = hauteur * 0.9;
+    terrain->setRect(0, 0, tailleX, tailleY);
+    barre_gauche_item->setRect(tailleX * 0.1, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
+    barre_droite_item->setRect(tailleX * 0.9, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
+    ligneMid->setLine(0, 0, 0, tailleY);
+    ligneMid->setPos(tailleX * 0.5, 0);
+    texte->setPos(tailleX * 0.45, 2);
+    texte->setScale(3);
+
+  } else {
+    plein_ecran = false;
+
+    tailleX = largeur * 0.5;
+    tailleY = hauteur * 0.5;
+    terrain->setRect(0, 0, tailleX, tailleY);
+    barre_gauche_item->setRect(tailleX * 0.1, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
+    barre_droite_item->setRect(tailleX * 0.9, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
+    ligneMid->setLine(0, 0, 0, tailleY);
+    ligneMid->setPos(tailleX * 0.5, 0);
+    texte->setPos(tailleX * 0.45, 2);
+    texte->setScale(1);
+  }
+}
 
 void MyScene::slot_setVitesse(int nouveau) {
   sensX *= nouveau;
@@ -194,8 +209,4 @@ void MyScene::slot_couleur() {
   int B = rand()%255;
 
   this->setBackgroundBrush(QColor(R, G, B));
-}
-
-int MyScene::getPleinEcran() {
-  return plein_ecran;
 }

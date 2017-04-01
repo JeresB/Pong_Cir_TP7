@@ -2,23 +2,30 @@
 #include "myscene.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-  this->setWindowTitle("Pong");
+  this->setWindowTitle("Pong"); // Nom de la fenêtre
 
   widget_general = new QWidget;
   QHBoxLayout *qbl_general = new QHBoxLayout;
 
+  // Création du widget principale
   widget_general->setLayout(qbl_general);
   this->setCentralWidget(widget_general);
 
+  // Création de la scène de jeu
   myscene = new MyScene(this);
+  myscene->setBackgroundBrush(Qt::yellow);
   myview = new QGraphicsView(myscene, this);
-  myview->setCacheMode(QGraphicsView::CacheBackground);
 
   qbl_general->addWidget(BuildGroupBoxControle());
   qbl_general->addWidget(myview);
 
+  // Action permettant de reset le score des joueurs
   action_reset = new QAction(tr("&Reset"), this);
+
+  // Action permettant de changer la couleur du fond
   action_couleur = new QAction(tr("&Couleur"), this);
+
+  // Création du menu et ajout de nos actions
   menuFichier = menuBar()->addMenu(tr("&Fichier"));
   menuFichier->addAction(action_reset);
   menuFichier->addAction(action_couleur);
@@ -30,38 +37,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 MainWindow::~MainWindow(){}
 
 QGroupBox *MainWindow::BuildGroupBoxControle() {
-  QGroupBox *qgb = new QGroupBox(tr("Contrôle"));
+  group_box = new QGroupBox(tr("Contrôle"));
 
-  QSlider *vitesse = new QSlider(Qt::Vertical, this);
-  QPushButton *pleinEcran = new QPushButton("Plein Ecran", this);
-  QPushButton *quitter = new QPushButton("Quitter", this);
+  //QSlider *vitesse = new QSlider(Qt::Vertical, this);
+  //vitesse->setRange(0, 10);
+  //vitesse->setGeometry(10, 60, 150, 20);
+  plein_ecran = new QPushButton("Plein Ecran", this);
+  quitter = new QPushButton("Quitter", this);
 
-  vitesse->setRange(0, 10);
-  vitesse->setGeometry(10, 60, 150, 20);
+  box_control = new QVBoxLayout;
+    box_control->addWidget(plein_ecran);
+    //box_control->addWidget(vitesse);
+    box_control->addWidget(quitter);
+    box_control->addStretch(1);
+    group_box->setLayout(box_control);
 
-  QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(pleinEcran);
-    vbox->addWidget(vitesse);
-    vbox->addWidget(quitter);
-    vbox->addStretch(1);
-    qgb->setLayout(vbox);
-
-
-  connect(pleinEcran, SIGNAL(clicked()), this, SLOT(slot_pleinecran()));
-  connect(vitesse, SIGNAL(valueChanged(int)), myscene, SLOT(slot_setVitesse(int)));
+  //connect(vitesse, SIGNAL(valueChanged(int)), myscene, SLOT(slot_setVitesse(int)));
+  connect(plein_ecran, SIGNAL(clicked()), this, SLOT(slot_pleinecran()));
   connect(quitter, SIGNAL(clicked()), qApp, SLOT(quit()));
 
-  return qgb;
+  return group_box;
 }
 
 void MainWindow::slot_pleinecran() {
-  if (this->isFullScreen()) {
-    this->show();
-  } else {
-    this->showFullScreen();
-  }
-}
-
-int MainWindow::getPleinEcran() {
-  return myscene->getPleinEcran();
+  this->setWindowState(this->windowState() ^ Qt::WindowFullScreen);
+  myscene->pleinecran_myscene();
 }
