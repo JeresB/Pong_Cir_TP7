@@ -24,23 +24,26 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   vitesseX = 2;
   vitesseY = 1;
 
+  largeur_raquette = LARGEUR_RAQUETTE * 0.02 * tailleX;
+  longeur_raquette = LONGEUR_RAQUETTE * 0.04 * tailleY;
+
   //On gere le rectangle d'espace de jeu
   terrain = new QGraphicsRectItem(0, 0, tailleX, tailleY);
-  terrain->setBrush(Qt::blue);
+  terrain->setBrush(QColor(15, 72, 242));
   this->addItem(terrain);
 
   //On gère la barre qui bouge de gauche
-  barre_gauche_item = new QGraphicsRectItem(tailleX * 0.1, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
-  barre_gauche_item->setBrush(QColor(0,0,0));
+  barre_gauche_item = new QGraphicsRectItem(tailleX * 0.05, tailleY * 0.5, largeur_raquette, longeur_raquette);
+  barre_gauche_item->setBrush(QColor(0,255,0));
   this->addItem(barre_gauche_item) ;
 
   //On gère la barre qui bouge de droite
-  barre_droite_item = new QGraphicsRectItem(tailleX * 0.9, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
-  barre_droite_item->setBrush(QColor(0,0,0));
+  barre_droite_item = new QGraphicsRectItem(tailleX * 0.95, tailleY * 0.5, largeur_raquette, longeur_raquette);
+  barre_droite_item->setBrush(QColor(255,0,0));
   this->addItem(barre_droite_item) ;
 
   //ligne mediane
-  QPen pen = QPen(Qt::red);
+  QPen pen = QPen(Qt::white);
   pen.setWidth(3);
   pen.setStyle(Qt::DashLine);
   ligneMid = new QGraphicsLineItem(0, 0, 0, hauteur/2);
@@ -62,9 +65,13 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   pause->setVisible(false);
 
   //On affiche notre balle
-  ball = new QGraphicsPixmapItem(QPixmap("ballon-icone-6652-16.png"));
+  image_ball = new QPixmap("ballon-icone-6652-16.png");
+  ball = new QGraphicsPixmapItem(*image_ball);
   ball->setPos(posBallX, posBallY);
   this->addItem(ball) ;
+
+  obstacle_1 = new QGraphicsRectItem(300, 200, 5, 50);
+  obstacle_1->setBrush(QColor(0,0,0));
 
 
   //On gere le timer
@@ -75,7 +82,7 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
 
 void MyScene::CheckBord() {
   //Gère la largeur pour les rebonds
-  if(ball->x()+sensX > tailleX) {
+  if(ball->x()+sensX+image_ball->width() > tailleX) {
     vitesseX = 2;
     vitesseY = 1;
     sensX = -vitesseX;
@@ -89,7 +96,7 @@ void MyScene::CheckBord() {
   }
 
   //Gère la hauteur pour les rebonds
-  if(ball->y()+sensY > tailleY) {
+  if(ball->y()+sensY+image_ball->height() > tailleY) {
     sensY = -vitesseY;
   }
   if(ball->y()+sensY < 0) {
@@ -114,21 +121,46 @@ void MyScene::update() {
 
   ball->setX(ball->x()+sensX);
   ball->setY(ball->y()+sensY);
+  raquette_ia();
+  obstacle(1);
 
   texte->setPlainText(QString::number(scoreJ1)+"          "+QString::number(scoreJ2));
   //this->addItem(this->texte);
 }
 
+void MyScene::raquette_ia() {
+  if (sensY < niveau_ia) {
+    hauteurD = ball->y() - longeur_raquette * 3.8;
+    barre_droite_item->setPos(0, hauteurD);
+  } else {
+    if (sensY > 0) {
+      hauteurD += niveau_ia;
+      barre_droite_item->setPos(0, hauteurD);
+    } else {
+      if(hauteurD >= tailleY * 0.32) return;
+      else {
+        hauteurD -= niveau_ia;
+        barre_droite_item->setPos(0, hauteurD);
+      }
+    }
+
+  }
+}
+
+void MyScene::setIA(int ia) {
+  niveau_ia = ia;
+}
+
 void MyScene::keyPressEvent(QKeyEvent *event) {
   if(event->key() == Qt::Key_A) {
-    if(hauteurG <= -50) return;
+    if(hauteurG <= -longeur_raquette * 3) return;
     else {
       hauteurG = hauteurG -20;
       barre_gauche_item->setPos(0,hauteurG);
     }
   }
   if(event->key() == Qt::Key_Q) {
-    if(hauteurG >= tailleY - 100) return;
+    if(hauteurG >= tailleY * 0.32) return;
     else {
       hauteurG = hauteurG +20;
       barre_gauche_item->setPos(0,hauteurG);
@@ -136,7 +168,7 @@ void MyScene::keyPressEvent(QKeyEvent *event) {
   }
 
   if(event->key() == Qt::Key_P) {
-    if(hauteurD <= -50) return;
+    if(hauteurD <= -longeur_raquette * 3) return;
     else {
       hauteurD = hauteurD -20;
       barre_droite_item->setPos(0,hauteurD);
@@ -144,7 +176,7 @@ void MyScene::keyPressEvent(QKeyEvent *event) {
   }
 
   if(event->key() == Qt::Key_M) {
-    if(hauteurD >= tailleY - 100) return;
+    if(hauteurD >= tailleY * 0.32) return;
     else {
       hauteurD = hauteurD +20;
       barre_droite_item->setPos(0,hauteurD);
@@ -169,9 +201,11 @@ void MyScene::pleinecran_myscene() {
 
     tailleX = largeur * 0.9;
     tailleY = hauteur * 0.9;
+    largeur_raquette = LARGEUR_RAQUETTE * 0.02 * tailleX;
+    longeur_raquette = LONGEUR_RAQUETTE * 0.04 * tailleY;
     terrain->setRect(0, 0, tailleX, tailleY);
-    barre_gauche_item->setRect(tailleX * 0.1, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
-    barre_droite_item->setRect(tailleX * 0.9, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
+    barre_gauche_item->setRect(tailleX * 0.05, tailleY * 0.5, largeur_raquette, longeur_raquette);
+    barre_droite_item->setRect(tailleX * 0.95, tailleY * 0.5, largeur_raquette, longeur_raquette);
     ligneMid->setLine(0, 0, 0, tailleY);
     ligneMid->setPos(tailleX * 0.5, 0);
     texte->setPos(tailleX * 0.45, 2);
@@ -182,9 +216,11 @@ void MyScene::pleinecran_myscene() {
 
     tailleX = largeur * 0.5;
     tailleY = hauteur * 0.5;
+    largeur_raquette = LARGEUR_RAQUETTE * 0.02 * tailleX;
+    longeur_raquette = LONGEUR_RAQUETTE * 0.04 * tailleY;
     terrain->setRect(0, 0, tailleX, tailleY);
-    barre_gauche_item->setRect(tailleX * 0.1, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
-    barre_droite_item->setRect(tailleX * 0.9, tailleY * 0.5, LARGEUR_RAQUETTE * 0.02 * tailleX, LONGEUR_RAQUETTE * 0.05 * tailleY);
+    barre_gauche_item->setRect(tailleX * 0.05, tailleY * 0.5, largeur_raquette, longeur_raquette);
+    barre_droite_item->setRect(tailleX * 0.95, tailleY * 0.5, largeur_raquette, longeur_raquette);
     ligneMid->setLine(0, 0, 0, tailleY);
     ligneMid->setPos(tailleX * 0.5, 0);
     texte->setPos(tailleX * 0.45, 2);
@@ -192,10 +228,24 @@ void MyScene::pleinecran_myscene() {
   }
 }
 
-void MyScene::slot_setVitesse(int nouveau) {
-  sensX *= nouveau;
-  sensY *= nouveau/2;
+void MyScene::obstacle(int niveau) {
+  if (obstacle_set == false) {
+    if (obstacle_1->hasFocus() == false) {
+      this->addItem(obstacle_1);
+    }
+
+    if(obstacle_1->collidesWithItem(ball)) {
+      sensX *= -1;
+    }
+  } else {
+    this->removeItem(obstacle_1);
+  }
 }
+
+// void MyScene::slot_setVitesse(int nouveau) {
+//   sensX *= nouveau;
+//   sensY *= nouveau/2;
+// }
 
 void MyScene::slot_reset() {
   scoreJ1 = 0;
