@@ -13,6 +13,7 @@
 #include <QMenuBar>
 #include <QRadioButton>
 #include <QLabel>
+#include <QButtonGroup>
 #include "myscene.h"
 
 #define IA_NIVEAU_1 3
@@ -29,22 +30,37 @@ class MainWindow : public QMainWindow {
   public slots:
     void slot_pleinecran();
     void slot_ia();
+    void slot_map();
 
   private:
     QWidget *widget_general;
+
     QMenu *menuFichier;
+
     QGraphicsView *myview;
     MyScene *myscene;
+
     QAction *action_reset;
     QAction *action_couleur;
+
     QGroupBox *group_box;
+    QVBoxLayout *box_control;
+
     QPushButton *plein_ecran;
     QPushButton *quitter;
-    QVBoxLayout *box_control;
+
+    QLabel *niveau_ia;
+    QButtonGroup *groupe_ia;
     QRadioButton *ia_1;
     QRadioButton *ia_2;
     QRadioButton *ia_3;
-    QLabel *niveau_ia;
+
+    QLabel *niveau_map;
+    QButtonGroup *groupe_map;
+    QRadioButton *map_1;
+    QRadioButton *map_2;
+    QRadioButton *map_3;
+
 };
 
 #endif

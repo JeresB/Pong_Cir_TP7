@@ -65,13 +65,21 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   pause->setVisible(false);
 
   //On affiche notre balle
-  image_ball = new QPixmap("ballon-icone-6652-16.png");
-  ball = new QGraphicsPixmapItem(*image_ball);
-  ball->setPos(posBallX, posBallY);
-  this->addItem(ball) ;
+  try {
+    image_ball = QPixmap("ball2.png");
+    ball = new QGraphicsPixmapItem(image_ball);
+    ball->setPos(posBallX, posBallY);
+    this->addItem(ball);
+    qDebug() << "[SUCCES] : Initialisation de la balle";
+  } catch (...) {
+    qWarning() << "[WARNING] : Problème de format de la balle";
+  }
 
-  obstacle_1 = new QGraphicsRectItem(300, 200, 5, 50);
+
+  obstacle_1 = new QGraphicsRectItem(450, 50, 5, 50);
   obstacle_1->setBrush(QColor(0,0,0));
+  obstacle_2 = new QGraphicsRectItem(300, 200, 5, 50);
+  obstacle_2->setBrush(QColor(0,0,0));
 
 
   //On gere le timer
@@ -82,7 +90,7 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
 
 void MyScene::CheckBord() {
   //Gère la largeur pour les rebonds
-  if(ball->x()+sensX+image_ball->width() > tailleX) {
+  if(ball->x()+sensX+image_ball.width() > tailleX) {
     vitesseX = 2;
     vitesseY = 1;
     sensX = -vitesseX;
@@ -96,7 +104,7 @@ void MyScene::CheckBord() {
   }
 
   //Gère la hauteur pour les rebonds
-  if(ball->y()+sensY+image_ball->height() > tailleY) {
+  if(ball->y()+sensY+image_ball.height() > tailleY) {
     sensY = -vitesseY;
   }
   if(ball->y()+sensY < 0) {
@@ -114,6 +122,12 @@ void MyScene::CheckBord() {
     vitesseX++;
     vitesseY++;
   }
+
+  if (niveau_map == 2) {
+    if(obstacle_1->collidesWithItem(ball) || obstacle_2->collidesWithItem(ball)) {
+      sensX *= -1;
+    }
+  }
 }
 
 void MyScene::update() {
@@ -122,7 +136,6 @@ void MyScene::update() {
   ball->setX(ball->x()+sensX);
   ball->setY(ball->y()+sensY);
   raquette_ia();
-  obstacle(1);
 
   texte->setPlainText(QString::number(scoreJ1)+"          "+QString::number(scoreJ2));
   //this->addItem(this->texte);
@@ -131,11 +144,14 @@ void MyScene::update() {
 void MyScene::raquette_ia() {
   if (sensY < niveau_ia) {
     hauteurD = ball->y() - longeur_raquette * 3.8;
+    if(hauteurD >= tailleY * 0.32) return;
+    if(hauteurD <= -longeur_raquette * 3) return;
     barre_droite_item->setPos(0, hauteurD);
   } else {
     if (sensY > 0) {
       hauteurD += niveau_ia;
-      barre_droite_item->setPos(0, hauteurD);
+      if(hauteurD <= -longeur_raquette * 3) return;
+      else barre_droite_item->setPos(0, hauteurD);
     } else {
       if(hauteurD >= tailleY * 0.32) return;
       else {
@@ -228,24 +244,28 @@ void MyScene::pleinecran_myscene() {
   }
 }
 
-void MyScene::obstacle(int niveau) {
-  if (obstacle_set == false) {
-    if (obstacle_1->hasFocus() == false) {
-      this->addItem(obstacle_1);
-    }
+void MyScene::setMap(int niveau) {
+  niveau_map = niveau;
 
-    if(obstacle_1->collidesWithItem(ball)) {
-      sensX *= -1;
-    }
+  if (niveau == 1) {
+    this->removeItem(obstacle_1);
+    this->removeItem(obstacle_2);
+
+  } else if (niveau == 2) {
+    this->addItem(obstacle_1);
+    this->addItem(obstacle_2);
+    // if(obstacle_1->collidesWithItem(ball) || obstacle_2->collidesWithItem(ball)) {
+    //   sensX *= -1;
+    // }
+  } else if (niveau == 3) {
+    qDebug() << "En cours de programmation" << endl;
+    this->removeItem(obstacle_1);
+    this->removeItem(obstacle_2);
   } else {
     this->removeItem(obstacle_1);
+    this->removeItem(obstacle_2);
   }
 }
-
-// void MyScene::slot_setVitesse(int nouveau) {
-//   sensX *= nouveau;
-//   sensY *= nouveau/2;
-// }
 
 void MyScene::slot_reset() {
   scoreJ1 = 0;

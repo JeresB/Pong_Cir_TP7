@@ -35,12 +35,11 @@ class MyScene : public QGraphicsScene {
     void pleinecran_myscene();
     void raquette_ia();
     void setIA(int ia);
-    void obstacle(int niveau);
+    void setMap(int niveau);
 
   public slots:
     void update();
 
-    //void slot_setVitesse(int);
     void slot_reset();
     void slot_couleur();
 
@@ -52,7 +51,7 @@ class MyScene : public QGraphicsScene {
 
     QGraphicsTextItem * pause;
     QGraphicsLineItem * ligneMid;
-    QPixmap *image_ball;
+    QPixmap image_ball;
     QGraphicsPixmapItem * ball;
     QGraphicsRectItem *barre_gauche_item;
     QGraphicsRectItem *barre_droite_item;
@@ -60,8 +59,7 @@ class MyScene : public QGraphicsScene {
     QTimer *timer;
 
     QGraphicsRectItem *obstacle_1;
-
-    bool obstacle_set = false;
+    QGraphicsRectItem *obstacle_2;
 
     int hauteur;
     int largeur;
@@ -90,6 +88,7 @@ class MyScene : public QGraphicsScene {
     bool plein_ecran = false;
 
     int niveau_ia = 3;
+    int niveau_map;
 };
 
 #endif
