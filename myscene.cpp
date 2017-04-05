@@ -86,6 +86,10 @@ MyScene::MyScene(QObject *parent) : QGraphicsScene(parent) {
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(update()));
   timer->start(30);
+
+  succes_coup = new QSound("656.wav", this);
+  musique = new QSound("0780.wav", this);
+  musique->setLoops(QSound::Infinite);
 }
 
 void MyScene::CheckBord() {
@@ -115,12 +119,14 @@ void MyScene::CheckBord() {
   if(barre_gauche_item->collidesWithItem(ball) && sensX<0) {
     sensX = vitesseX;
     vitesseX++;
+    succes_coup->play();
   }
   // Collision avec la barre de droite
   if(barre_droite_item->collidesWithItem(ball) && sensX<tailleX) {
     sensX = -vitesseX;
     vitesseX++;
     vitesseY++;
+    succes_coup->play();
   }
 
   if (niveau_map == 2) {
@@ -138,17 +144,16 @@ void MyScene::update() {
   raquette_ia();
 
   texte->setPlainText(QString::number(scoreJ1)+"          "+QString::number(scoreJ2));
-  //this->addItem(this->texte);
 }
 
 void MyScene::raquette_ia() {
-  if (sensY < niveau_ia) {
-    hauteurD = ball->y() - longeur_raquette * 3.8;
+  if (abs(sensY) < niveau_ia) {
+    hauteurD = ball->y() - longeur_raquette * 3.2;
     if(hauteurD >= tailleY * 0.32) return;
     if(hauteurD <= -longeur_raquette * 3) return;
     barre_droite_item->setPos(0, hauteurD);
   } else {
-    if (sensY > 0) {
+    if (abs(sensY) > 0) {
       hauteurD += niveau_ia;
       if(hauteurD <= -longeur_raquette * 3) return;
       else barre_droite_item->setPos(0, hauteurD);
@@ -254,13 +259,17 @@ void MyScene::setMap(int niveau) {
   } else if (niveau == 2) {
     this->addItem(obstacle_1);
     this->addItem(obstacle_2);
-    // if(obstacle_1->collidesWithItem(ball) || obstacle_2->collidesWithItem(ball)) {
-    //   sensX *= -1;
-    // }
+
   } else if (niveau == 3) {
-    qDebug() << "En cours de programmation" << endl;
+    qWarning() << "[WARNING] : Teleporter : En cours de programmation ...";
     this->removeItem(obstacle_1);
     this->removeItem(obstacle_2);
+
+  } else if (niveau == 4) {
+    qWarning() << "[WARNING] : Teleporter : En cours de programmation ...";
+    this->removeItem(obstacle_1);
+    this->removeItem(obstacle_2);
+
   } else {
     this->removeItem(obstacle_1);
     this->removeItem(obstacle_2);
@@ -279,4 +288,13 @@ void MyScene::slot_couleur() {
   int B = rand()%255;
 
   this->setBackgroundBrush(QColor(R, G, B));
+}
+
+void MyScene::slot_play() {
+  musique->play();
+  musique->setLoops(QSound::Infinite);
+}
+
+void MyScene::slot_stop() {
+  musique->stop();
 }

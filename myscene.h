@@ -21,6 +21,8 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QColor>
+#include <QSound>
+#include <cmath>
 
 #define LARGEUR_RAQUETTE 1
 #define LONGEUR_RAQUETTE 4
@@ -43,6 +45,9 @@ class MyScene : public QGraphicsScene {
     void slot_reset();
     void slot_couleur();
 
+    void slot_play();
+    void slot_stop();
+
   private:
     QBrush brush;
     QColor couleur;
@@ -57,6 +62,9 @@ class MyScene : public QGraphicsScene {
     QGraphicsRectItem *barre_droite_item;
     QGraphicsTextItem *texte;
     QTimer *timer;
+
+    QSound *succes_coup;
+    QSound *musique;
 
     QGraphicsRectItem *obstacle_1;
     QGraphicsRectItem *obstacle_2;

@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow {
     void slot_pleinecran();
     void slot_ia();
     void slot_map();
+    void slot_quit();
 
   private:
     QWidget *widget_general;
@@ -45,8 +46,10 @@ class MainWindow : public QMainWindow {
 
     QGroupBox *group_box;
     QVBoxLayout *box_control;
+    QHBoxLayout *musique_controle;
 
     QPushButton *plein_ecran;
+    QPushButton *reset;
     QPushButton *quitter;
 
     QLabel *niveau_ia;
@@ -60,6 +63,11 @@ class MainWindow : public QMainWindow {
     QRadioButton *map_1;
     QRadioButton *map_2;
     QRadioButton *map_3;
+    QRadioButton *map_4;
+
+    QLabel *musique;
+    QPushButton *play;
+    QPushButton *stop;
 
 };
 
